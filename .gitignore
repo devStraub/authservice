@@ -31,3 +31,39 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# ========================
+# LOGS
+# ========================
+*.log
+
+# ========================
+# OS FILES
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# SPRING CONFIG (SENSÍVEL)
+# ========================
+application-dev.properties
+application-test.properties
+application-prod.properties
+
+# ========================
+# ENV FILES
+# ========================
+.env
+.env.*
+
+# ========================
+# DATABASE (H2 / LOCAL)
+# ========================
+*.mv.db
+*.trace.db
+
+# ========================
+# TEMP FILES
+# ========================
+*.tmp
+*.swp

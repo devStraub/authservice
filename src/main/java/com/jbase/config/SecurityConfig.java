@@ -20,26 +20,7 @@ public class SecurityConfig {
 
 	private final CustomUserDetailsService userDetailsService;
 
-	// =========================
-	// TEST PROFILE (SEM OAUTH2)
-	// =========================
 	@Bean
-	@Profile("test")
-	public SecurityFilterChain securityFilterChainTest(HttpSecurity http) throws Exception {
-
-		http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
-				.userDetailsService(userDetailsService);
-
-		return http.build();
-	}
-
-	// =========================
-	// DEV / PROD (COM OAUTH2)
-	// =========================
-	@Bean
-	@Profile({ "dev", "prod" })
 	public SecurityFilterChain securityFilterChainOAuth(HttpSecurity http) throws Exception {
 
 		http.csrf(csrf -> csrf.disable())
@@ -54,9 +35,7 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-	// =========================
-	// BEANS GLOBAIS
-	// =========================
+
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
