@@ -2,7 +2,6 @@ package com.jbase.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.jbase.security.CustomUserDetailsService;
+import com.jbase.security.OAuthSuccessHandler;
+import com.jbase.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,31 +19,29 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
+    private final AuthService authService;
 
-	@Bean
-	public SecurityFilterChain securityFilterChainOAuth(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChainOAuth(HttpSecurity http) throws Exception {
 
-		http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
-						.anyRequest().authenticated())
-				.oauth2Login(oauth -> oauth.successHandler((request, response, authentication) -> {
+        http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
+                    .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth -> oauth
+                .successHandler(new OAuthSuccessHandler(authService))
+            )
+            .userDetailsService(userDetailsService);
 
-					response.setContentType("application/json");
-					response.getWriter().write("{\"message\": \"Login com Google OK\"}");
-				})).userDetailsService(userDetailsService);
+        return http.build();
+    }
 
-		return http.build();
-	}
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 
-
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-		return config.getAuthenticationManager();
-	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 }

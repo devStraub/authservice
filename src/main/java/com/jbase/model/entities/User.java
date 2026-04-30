@@ -3,6 +3,7 @@ package com.jbase.model.entities;
 import java.io.Serializable;
 
 import com.jbase.generic.BaseEntity;
+import com.jbase.model.enums.Provider;
 import com.jbase.model.enums.Role;
 
 import jakarta.persistence.Column;
@@ -36,9 +37,14 @@ public class User extends BaseEntity implements Serializable {
 	@Column(unique = true, nullable = false)
 	private String email;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String password;
 	
 	@Enumerated(EnumType.STRING)
 	private Role role;
+	
+	@Enumerated(EnumType.STRING)
+	private Provider provider;
+	
+	private String providerId;
 }
