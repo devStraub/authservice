@@ -2,7 +2,6 @@ package com.jbase.model.entities;
 
 import java.io.Serializable;
 
-import com.jbase.generic.BaseEntity;
 import com.jbase.model.enums.Provider;
 import com.jbase.model.enums.Role;
 
@@ -25,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends BaseEntity implements Serializable {
+public class User implements Serializable {
 	
 	
 	private static final long serialVersionUID = 7521582300759083362L;
