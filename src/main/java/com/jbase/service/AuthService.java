@@ -2,8 +2,6 @@ package com.jbase.service;
 
 import java.util.List;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.jbase.dto.AuthRequestDTO;
 import com.jbase.dto.AuthResponseDTO;
+import com.jbase.dto.OtpValidateDTO;
 import com.jbase.dto.RegisterRequestDTO;
 import com.jbase.model.entities.User;
 import com.jbase.model.enums.Provider;
@@ -27,6 +26,7 @@ public class AuthService {
 	private final JwtService jwtService;
 	private final UserRepository repository;
 	private final PasswordEncoder passwordEncoder;
+	private final OtpService otpService;
 
 	public AuthResponseDTO authenticate(AuthRequestDTO request) {
 
@@ -36,7 +36,7 @@ public class AuthService {
 		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
 			throw new RuntimeException("Credenciais inválidas");
 		}
-
+		
 		return generateToken(user);
 	}
 
@@ -96,6 +96,24 @@ public class AuthService {
 		User user = repository.findByEmail(email).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
 		return generateToken(user);
+	}
+	
+	public void requestOtp(String email) {
+	    otpService.generateOtp(email);
+	}
+	
+	public AuthResponseDTO validateOtp(OtpValidateDTO request) {
+
+	    boolean valid = otpService.validateOtp(request.getEmail(), request.getCode());
+
+	    if (!valid) {
+	        throw new RuntimeException("Código inválido");
+	    }
+
+	    User user = repository.findByEmail(request.getEmail())
+	            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+	    return generateToken(user);
 	}
 
 }
